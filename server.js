@@ -3,22 +3,17 @@ const cors = require("cors");
 require("dotenv").config();
 const { Pool } = require("pg");
 
-const productRoutes = require("./routes/productRoutes");
-const authRoutes = require("./routes/userRoutes");
-const blogRoutes = require("./routes/blogRoutes");
-
 const app = express();
 
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false,
-    },
+    connectionString: process.env.DATABASE_URL, 
+    ssl: process.env.DATABASE_URL.includes("localhost") ? false : { rejectUnauthorized: false }
 });
 
+// Verificar conexión
 pool.connect()
-    .then(() => console.log("📦 Conectado a la base de datos"))
-    .catch((err) => console.error("❌ Error al conectar la base de datos:", err));
+    .then(() => console.log("📦 Conectado a PostgreSQL"))
+    .catch((err) => console.error("❌ Error al conectar con PostgreSQL:", err));
 
 const allowedOrigins = [
     "https://el-kfe.netlify.app",
@@ -39,9 +34,9 @@ app.use(cors({
 
 app.use(express.json());
 
-app.use("/api/products", productRoutes);
-app.use("/api/auth", authRoutes);
-app.use("/api/blog", blogRoutes);
+app.use("/api/products", require("./routes/productRoutes"));
+app.use("/api/auth", require("./routes/userRoutes"));
+app.use("/api/blog", require("./routes/blogRoutes"));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Servidor corriendo en puerto ${PORT}`));
