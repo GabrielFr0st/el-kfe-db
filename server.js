@@ -7,9 +7,20 @@ const blogRoutes = require("./routes/blogRoutes");
 
 const app = express();
 
-app.use(cors({ origin: "http://localhost:3000", methods: "GET,POST,PUT,DELETE" }));
+const allowedOrigins = [
+    "https://el-kfe-frontend.netlify.app",
+    "http://localhost:3000"
+];
+
+app.use(cors({
+    origin: allowedOrigins,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
 app.use(express.json());
 
+// Rutas
 app.use("/api/products", productRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/blog", blogRoutes);
